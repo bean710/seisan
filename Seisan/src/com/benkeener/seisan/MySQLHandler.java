@@ -12,20 +12,15 @@ import org.json.simple.JSONObject;
 
 public class MySQLHandler {
 	private Connection connection = null;
-	private Statement statement = null;
 	
 	private PreparedStatement addProductStatement = null;
-	private PreparedStatement getProductsStatement = null;
-	
 	public void loadDataBase() throws Exception {
 		Class.forName("com.mysql.jdbc.Driver");
 		
 		connection = DriverManager.getConnection("jdbc:mysql://localhost/seisan?user=ben&password=password");
 		
-		statement = connection.createStatement();
-		
 		addProductStatement = connection.prepareStatement("INSERT INTO products VALUES (?, ?, ?, ?, ?)"); //sku, name, price, qty, description
-		getProductsStatement = connection.prepareStatement("SELECT * FROM products");
+		connection.prepareStatement("SELECT * FROM products");
 	}
 	
 	/*private void parseMeta(ResultSet resultSet) throws Exception {
@@ -53,17 +48,35 @@ public class MySQLHandler {
 	public void addProduct(int sku, String name, int price, int qty, String description) throws SQLException {
 		addProductStatement.setInt(1, sku);
 		addProductStatement.setString(2, name);
-		addProductStatement.setInt(3, qty);
-		addProductStatement.setString(4, description);
+		addProductStatement.setInt(3, price);
+		addProductStatement.setInt(4, qty);
+		addProductStatement.setString(5, description);
 		addProductStatement.executeQuery();
 	}
 	
-	private ResultSet getProducts() throws SQLException {
-		return getProductsStatement.executeQuery();
+	private ResultSet getProducts(int sku, String name) throws SQLException {
+		PreparedStatement ps = null;
+		if (sku > -1 && name != null) {
+			ps = connection.prepareStatement("SELECT * FROM products WHERE sku=? AND name LIKE ?");
+			ps.setInt(1, sku);
+			ps.setString(2, "%" + name + "%");
+		} else if (sku > -1) {
+			ps = connection.prepareStatement("SELECT * FROM products WHERE sku=?");
+			ps.setInt(1, sku);
+		} else if (name != null) {
+			ps = connection.prepareStatement("SELECT * FROM products WHERE name LIKE ?");
+			ps.setString(1, "%" + name + "%");
+		} else {
+			ps = connection.prepareStatement("SELECT * FROM products");
+		}
+		
+		System.out.println(ps.toString());
+		
+		return ps.executeQuery();
 	}
 	
-	public JSONArray getProductsJSON() throws SQLException, Exception {
-		return formatToJSON(getProducts());
+	public JSONArray getProductsJSON(int sku, String name) throws SQLException, Exception {
+		return formatToJSON(getProducts(sku, name));
 	}
 	
 	@SuppressWarnings("unchecked")

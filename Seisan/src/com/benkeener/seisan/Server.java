@@ -7,7 +7,8 @@ import com.sun.net.httpserver.*;
 public class Server {
 	private HttpServer server;
 	
-	public void Start(int port) {
+	public void Start(int port, MySQLHandler mySql) {
+		
 		try {
 			server = HttpServer.create(new InetSocketAddress(port), 0);
 		} catch (IOException e) {
@@ -16,7 +17,8 @@ public class Server {
 		}
 		
 		System.out.println("Server started on port " + String.valueOf(port));
-		
+
+		server.createContext("/foo", new Handlers.FooHandler(mySql));
 		server.createContext("/", new Handlers.RootHandler());
 		
 		server.setExecutor(null);

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.json.simple.JSONArray;
@@ -13,27 +14,21 @@ public class MySQLHandler {
 	private Connection connection = null;
 	private Statement statement = null;
 	
-	private PreparedStatement addFoo = null;
+	private PreparedStatement addProductStatement = null;
+	private PreparedStatement getProductsStatement = null;
 	
 	public void loadDataBase() throws Exception {
 		Class.forName("com.mysql.jdbc.Driver");
 		
-		connection = DriverManager.getConnection("jdbc:mysql://localhost/jtest?user=ben&password=password");
+		connection = DriverManager.getConnection("jdbc:mysql://localhost/seisan?user=ben&password=password");
 		
 		statement = connection.createStatement();
 		
-		addFoo = connection.prepareStatement("INSERT INTO foo VALUES (default, ?, ?)");
-		addFoo.setString(1, "bar");
-		addFoo.setInt(2, 32);
-		addFoo.executeUpdate();
-		
-		ResultSet resultSet = statement.executeQuery("SELECT * FROM foo");
-		parseMeta(resultSet);
-		parseData(resultSet);
-		
+		addProductStatement = connection.prepareStatement("INSERT INTO products VALUES (?, ?, ?, ?, ?)"); //sku, name, price, qty, description
+		getProductsStatement = connection.prepareStatement("SELECT * FROM products");
 	}
 	
-	private void parseMeta(ResultSet resultSet) throws Exception {
+	/*private void parseMeta(ResultSet resultSet) throws Exception {
 
         System.out.println("Table: " + resultSet.getMetaData().getTableName(1));
         for  (int i = 1; i<= resultSet.getMetaData().getColumnCount(); i++){
@@ -53,6 +48,22 @@ public class MySQLHandler {
 			System.out.println("Age: " + String.valueOf(age));
 		}
 		
+	}*/
+	
+	public void addProduct(int sku, String name, int price, int qty, String description) throws SQLException {
+		addProductStatement.setInt(1, sku);
+		addProductStatement.setString(2, name);
+		addProductStatement.setInt(3, qty);
+		addProductStatement.setString(4, description);
+		addProductStatement.executeQuery();
+	}
+	
+	private ResultSet getProducts() throws SQLException {
+		return getProductsStatement.executeQuery();
+	}
+	
+	public JSONArray getProductsJSON() throws SQLException, Exception {
+		return formatToJSON(getProducts());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -62,9 +73,11 @@ public class MySQLHandler {
 		while (resultSet.next()) {
 			JSONObject tmp = new JSONObject();
 			
-			tmp.put("id", resultSet.getInt("ID"));
+			tmp.put("sku", resultSet.getInt("sku"));
 			tmp.put("name", resultSet.getString("name"));
-			tmp.put("age", resultSet.getInt("age"));
+			tmp.put("price", resultSet.getInt("price"));
+			tmp.put("qty", resultSet.getInt("qty"));
+			tmp.put("description", resultSet.getString("description"));
 			
 			ret.add(tmp);
 		}

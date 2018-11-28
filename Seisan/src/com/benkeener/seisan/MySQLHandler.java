@@ -5,8 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -22,28 +20,6 @@ public class MySQLHandler {
 		addProductStatement = connection.prepareStatement("INSERT INTO products VALUES (?, ?, ?, ?, ?)"); //sku, name, price, qty, description
 		connection.prepareStatement("SELECT * FROM products");
 	}
-	
-	/*private void parseMeta(ResultSet resultSet) throws Exception {
-
-        System.out.println("Table: " + resultSet.getMetaData().getTableName(1));
-        for  (int i = 1; i<= resultSet.getMetaData().getColumnCount(); i++){
-            System.out.println("Column " +i  + " "+ resultSet.getMetaData().getColumnName(i));
-        }
-        
-    }
-	
-	private void parseData(ResultSet resultSet) throws Exception {
-		
-		while (resultSet.next()) {
-			int id = resultSet.getInt("ID");
-			String name = resultSet.getString("name");
-			int age = resultSet.getInt("age");
-			System.out.println("ID: " + String.valueOf(id));
-			System.out.println("Name: " + name);
-			System.out.println("Age: " + String.valueOf(age));
-		}
-		
-	}*/
 	
 	public void addProduct(int sku, String name, int price, int qty, String description) throws SQLException {
 		addProductStatement.setInt(1, sku);
@@ -97,5 +73,16 @@ public class MySQLHandler {
 		
 		return ret;
 		
+	}
+	
+	public void addContact(String firstName, String lastName, String email, int zip, String comment) throws SQLException {
+		PreparedStatement ps = connection.prepareStatement("INSERT INTO contact VALUES (?, ?, ?, ?, ?, DEFAULT)"); //
+		ps.setString(1, firstName);
+		ps.setString(2, lastName);
+		ps.setString(3, email);
+		ps.setInt(4, zip);
+		ps.setString(5, comment);
+		System.out.println(ps.toString());
+		ps.executeUpdate();
 	}
 }

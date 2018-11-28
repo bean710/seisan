@@ -19,7 +19,7 @@ public class Server {
 		System.out.println("Server started on port " + String.valueOf(port));
 
 		server.createContext("/foo", new Handlers.FooHandler(mySql));
-		server.createContext("/contact", new Handlers.ContactHandler(mySql));
+		server.createContext("/contactAPI", new Handlers.ContactHandler(mySql));
 		server.createContext("/", new Handlers.RootHandler());
 		
 		server.setExecutor(null);

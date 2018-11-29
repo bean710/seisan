@@ -1,0 +1,36 @@
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="/scripts/products.js"></script>
+
+  <style media="screen">
+    #products {
+      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    #products td, #products th {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    #products tr:nth-child(even){background-color: #f2f2f2;}
+
+    #pproducts th {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      text-align: left;
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+
+</head>
+<body>
+  <a href="/"> Home </a> <br>
+  Search Products by name: <input type="text" name="name"> or SKU: <input type="number" name="sku"> <input type="submit" name="submit" onclick="submitData()"> <br><br>
+
+  <div id="results"></div>
+</body>
+</html>

@@ -21,10 +21,11 @@ public class MySQLHandler {
 		connection.prepareStatement("SELECT * FROM products");
 	}
 	
-	public void addProduct(int sku, String name, int price, int qty, String description) throws SQLException {
+	public void addProduct(int sku, String name, double price, int qty, String description) throws SQLException {
 		addProductStatement.setInt(1, sku);
 		addProductStatement.setString(2, name);
-		addProductStatement.setInt(3, price);
+		//addProductStatement.setInt(3, price);
+		addProductStatement.setDouble(3, price);
 		addProductStatement.setInt(4, qty);
 		addProductStatement.setString(5, description);
 		addProductStatement.executeQuery();
@@ -64,7 +65,7 @@ public class MySQLHandler {
 			
 			tmp.put("sku", resultSet.getInt("sku"));
 			tmp.put("name", resultSet.getString("name"));
-			tmp.put("price", resultSet.getInt("price"));
+			tmp.put("price", resultSet.getDouble("price"));
 			tmp.put("qty", resultSet.getInt("qty"));
 			tmp.put("description", resultSet.getString("description"));
 			

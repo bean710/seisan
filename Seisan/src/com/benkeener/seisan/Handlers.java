@@ -194,11 +194,27 @@ public class Handlers {
 				e.printStackTrace();
 			}
 			
-			String response = "Thanks";
-			exc.sendResponseHeaders(200, response.length());
-            OutputStream os = exc.getResponseBody();
-            os.write(response.toString().getBytes());
-            os.close();
+			File file = new File("./../static/success.html");
+			
+			if (!file.isFile()) {
+				// File does not exist
+				String res = "404 File Not Found";
+				exc.sendResponseHeaders(404, res.length());
+				OutputStream out = exc.getResponseBody();
+				out.write(res.getBytes());
+				out.close();
+			} else {
+				exc.sendResponseHeaders(200, 0);
+				OutputStream out = exc.getResponseBody();
+				FileInputStream fs = new FileInputStream(file);
+				final byte[] buffer = new byte[0x10000];
+				int i = 0;
+				while ((i = fs.read(buffer)) >= 0) {
+					out.write(buffer, 0, i);
+				}
+				fs.close();
+				out.close();
+			}
 		}
 
 	}
